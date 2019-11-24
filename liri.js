@@ -104,4 +104,67 @@ if (process.argv[2] === "concert-this") {
         console.log("\nNo results found.");
       })
     );
+} else if (process.argv[2] === "movie-this") {
+  let movie = process.argv.slice(3, process.argv.length).join("+");
+  function Movie(title, year, country, language, actors, plot) {
+    this.title = title;
+    this.year = year;
+    this.country = country;
+    this.language = language;
+    this.actors = actors;
+    this.plot = plot;
+
+    function getRatings() {
+      console.log("Ratings");
+    }
+
+    this.printInfo = function printInfo() {
+      console.log(
+        "\nTitle: " +
+          this.title +
+          "\nYear: " +
+          this.year +
+          "\nCountry: " +
+          this.country +
+          "\nLanguage: " +
+          this.language +
+          "\nActors: " +
+          this.actors +
+          "\nPlot synopsis: " +
+          this.plot +
+          "\n"
+      );
+    }
+  }
+
+  let queryUrl = "http://www.omdbapi.com/?t=" + movie + "&apikey=99c37d73";
+  console.log(queryUrl);
+
+  axios.get(queryUrl).then(function(response) {
+    response.data.Title === undefined
+      ? axios
+          .get("http://www.omdbapi.com/?t=mr+nobody&apikey=99c37d73")
+          .then(function(response) {
+            let defaultMovie = new Movie(
+              response.data.Title,
+              response.data.Year,
+              response.data.Country,
+              response.data.Language,
+              response.data.Actors,
+              response.data.Plot
+            );
+            console.log("\nNo matches found.");
+            console.log(defaultMovie.printInfo());
+          })
+      : console.log("\nMatch found:");
+    let movieDetails = new Movie(
+      response.data.Title,
+      response.data.Year,
+      response.data.Country,
+      response.data.Language,
+      response.data.Actors,
+      response.data.Plot
+    );
+    console.log(movieDetails.printInfo());
+  });
 }
