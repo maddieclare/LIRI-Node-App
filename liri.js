@@ -54,39 +54,54 @@ if (process.argv[2] === "concert-this") {
     .search({ type: "track", query: song })
     .then(
       (songInfo = response => {
-        response.tracks.items[0] === undefined
+        let track = response.tracks.items[0];
+        function Song(title, artist, album, link) {
+          this.title = title;
+          this.artist = artist;
+          this.album = album;
+          this.linkToSong = link;
+
+          this.printInfo = function printInfo() {
+            console.log(
+              "\nTitle: " +
+                this.title +
+                "\nArtist: " +
+                this.artist +
+                "\nAlbum: " +
+                this.album +
+                "\nLink: " +
+                this.linkToSong +
+                "\n"
+            );
+          };
+        }
+        track === undefined
           ? spotify
               .search({ type: "track", query: "the sign ace of base" })
               .then(function(response) {
-                let songDetails =
-                  "\nTitle: " +
-                  response.tracks.items[0].name +
-                  "\nArtist: " +
-                  response.tracks.items[0].artists[0].name +
-                  "\nAlbum: " +
-                  response.tracks.items[0].album.name +
-                  "\nLink: " +
-                  response.tracks.items[0].external_urls.spotify +
-                  "\n";
-                console.log(songDetails);
+                let defaultSong = new Song(
+                  response.tracks.items[0].name,
+                  response.tracks.items[0].artists[0].name,
+                  response.tracks.items[0].album.name,
+                  response.tracks.items[0].external_urls.spotify
+                );
+
+                defaultSong.printInfo();
               })
           : console.log("\nMatch found:");
-        let songDetails =
-          "\nTitle: " +
-          response.tracks.items[0].name +
-          "\nArtist: " +
-          response.tracks.items[0].artists[0].name +
-          "\nAlbum: " +
-          response.tracks.items[0].album.name +
-          "\nLink: " +
-          response.tracks.items[0].external_urls.spotify +
-          "\n";
-        console.log(songDetails);
+        let songDetails = new Song(
+          response.tracks.items[0].name,
+          response.tracks.items[0].artists[0].name,
+          response.tracks.items[0].album.name,
+          response.tracks.items[0].external_urls.spotify
+        );
+
+        songDetails.printInfo();
       })
     )
     .catch(
       (errorInfo = err => {
-        console.log("\nError occurred: " + err);
+        console.log("\nNo results found.");
       })
     );
 }
