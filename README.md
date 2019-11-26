@@ -17,6 +17,8 @@ The four commands the app takes are as follows:
   * City: Chicago, United States
   * Date: 12/01/2019 *(MM/DD/YYYY format)*
 
+  (...)
+
 2. **spotify-this-song**: Returns information on the song specified by the user.
   For example, *node liri spotify-this-song highway to hell* returns song information based on the user's search in the following format:
 
