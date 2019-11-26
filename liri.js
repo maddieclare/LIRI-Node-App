@@ -18,7 +18,7 @@ if (process.argv[2] === "concert-this") {
 } else if (process.argv[2] === "do-what-it-says") {
   doWhatItSays();
 } else {
-  console.log("\nPlease enter a valid command.\n")
+  console.log("\nPlease enter a valid command.\n");
 }
 
 function concertThis(artist) {
@@ -55,7 +55,7 @@ function concertThis(artist) {
     )
     .catch(
       (errorInfo = err => {
-        console.log("I appear to have run into an error: " + err + "\n");
+        console.log("I appear to have run into an error. " + err + "\n");
       })
     );
 }
@@ -76,7 +76,7 @@ function spotifyThisSong(song) {
           this.album = album;
           this.linkToSong = link;
 
-          this.printInfo = function printInfo() {
+          this.printInfo = function() {
             console.log(
               "\nTitle: " +
                 this.title +
@@ -137,7 +137,7 @@ function movieThis(movie) {
     this.actors = actors;
     this.plot = plot;
 
-    this.getRatings = function getRatings(response) {
+    this.getRatings = function(response) {
       console.log("Ratings for this movie:\n");
       response.data.Ratings.forEach(rating =>
         console.log(rating.Source + ": " + rating.Value)
@@ -145,7 +145,7 @@ function movieThis(movie) {
       console.log("\n");
     };
 
-    this.printInfo = function printInfo() {
+    this.printInfo = function() {
       console.log(
         "\nTitle: " +
           this.title +
@@ -211,7 +211,7 @@ function movieThis(movie) {
           response.data.Plot
         );
         console.log("\nNo matches found.");
-        console.log("Here is another movie you may enjoy instead:")
+        console.log("Here is another movie you may enjoy instead:");
         defaultMovie.printInfo();
         defaultMovie.getRatings(response);
       })
