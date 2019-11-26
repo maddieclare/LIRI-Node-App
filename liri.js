@@ -6,15 +6,17 @@ var moment = require("moment");
 var Spotify = require("node-spotify-api");
 var fs = require("file-system");
 
+let userInput = "default";
+
 if (process.argv[2] === "concert-this") {
-  let artist = process.argv.slice(3, process.argv.length).join("+");
-  concertThis(artist);
+  userInput = process.argv.slice(3, process.argv.length).join("+");
+  concertThis(userInput);
 } else if (process.argv[2] === "spotify-this-song") {
-  let song = process.argv.slice(3, process.argv.length).join(" ");
-  spotifyThisSong(song);
+  userInput = process.argv.slice(3, process.argv.length).join(" ");
+  spotifyThisSong(userInput);
 } else if (process.argv[2] === "movie-this") {
-  let movie = process.argv.slice(3, process.argv.length).join("+");
-  movieThis(movie);
+  userInput = process.argv.slice(3, process.argv.length).join("+");
+  movieThis(userInput);
 } else if (process.argv[2] === "do-what-it-says") {
   doWhatItSays();
 } else {
