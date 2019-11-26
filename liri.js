@@ -63,10 +63,7 @@ function concertThis(artist) {
 function spotifyThisSong(song) {
   console.log("\nSearching for this song on Spotify...");
 
-  let spotify = new Spotify({
-    id: "3bb15c6190ec489db0b55cde9d33ab58",
-    secret: "f8f725a3aa4d446eb47d7b281e72fd98"
-  });
+  let spotify = new Spotify(keys.spotify);
 
   spotify
     .search({ type: "track", query: song })
