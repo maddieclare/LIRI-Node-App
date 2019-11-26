@@ -4,21 +4,25 @@ var keys = require("./keys.js");
 var axios = require("axios");
 var moment = require("moment");
 var Spotify = require("node-spotify-api");
-var fs = require('file-system');
+var fs = require("file-system");
 
 if (process.argv[2] === "concert-this") {
-  concertThis();
+  let artist = process.argv.slice(3, process.argv.length).join("+");
+  concertThis(artist);
 } else if (process.argv[2] === "spotify-this-song") {
-  spotifyThisSong();
+  let song = process.argv.slice(3, process.argv.length).join(" ");
+  spotifyThisSong(song);
 } else if (process.argv[2] === "movie-this") {
-  movieThis();
+  let movie = process.argv.slice(3, process.argv.length).join("+");
+  movieThis(movie);
 } else if (process.argv[2] === "do-what-it-says") {
   doWhatItSays();
+} else {
+  console.log("\nPlease enter a valid command.\n")
 }
 
-function concertThis() {
+function concertThis(artist) {
   console.log("\nSearching for upcoming performances from this artist...");
-  let artist = process.argv.slice(3, process.argv.length).join("+");
 
   let queryUrl =
     "https://rest.bandsintown.com/artists/" +
@@ -51,14 +55,13 @@ function concertThis() {
     )
     .catch(
       (errorInfo = err => {
-        console.log("\nError occurred: " + err + "\n");
+        console.log("I appear to have run into an error: " + err + "\n");
       })
     );
 }
 
-function spotifyThisSong() {
+function spotifyThisSong(song) {
   console.log("\nSearching for this song on Spotify...");
-  let song = process.argv.slice(3, process.argv.length).join(" ");
 
   let spotify = new Spotify({
     id: "3bb15c6190ec489db0b55cde9d33ab58",
@@ -90,41 +93,44 @@ function spotifyThisSong() {
             );
           };
         }
-        track === undefined
-          ? spotify
-              .search({ type: "track", query: "the sign ace of base" })
-              .then(function(response) {
-                let defaultSong = new Song(
-                  response.tracks.items[0].name,
-                  response.tracks.items[0].artists[0].name,
-                  response.tracks.items[0].album.name,
-                  response.tracks.items[0].external_urls.spotify
-                );
+        if (track === undefined) {
+          console.log("\nNo results found.");
+          console.log("Here is another song you might enjoy instead:");
 
-                defaultSong.printInfo();
-              })
-          : console.log("\nMatch found:");
-        let songDetails = new Song(
-          response.tracks.items[0].name,
-          response.tracks.items[0].artists[0].name,
-          response.tracks.items[0].album.name,
-          response.tracks.items[0].external_urls.spotify
-        );
+          spotify
+            .search({ type: "track", query: "the sign ace of base" })
+            .then(function(response) {
+              let defaultSong = new Song(
+                response.tracks.items[0].name,
+                response.tracks.items[0].artists[0].name,
+                response.tracks.items[0].album.name,
+                response.tracks.items[0].external_urls.spotify
+              );
 
-        songDetails.printInfo();
+              defaultSong.printInfo();
+            });
+        } else {
+          console.log("\nMatch found:");
+          let songDetails = new Song(
+            response.tracks.items[0].name,
+            response.tracks.items[0].artists[0].name,
+            response.tracks.items[0].album.name,
+            response.tracks.items[0].external_urls.spotify
+          );
+
+          songDetails.printInfo();
+        }
       })
     )
     .catch(
       (errorInfo = err => {
-        console.log("\nNo results found.");
+        console.log("\nI seem to have run into an error. " + err);
       })
     );
 }
 
-function movieThis() {
+function movieThis(movie) {
   console.log("\nSearching OMDB for this movie...");
-
-  let movie = process.argv.slice(3, process.argv.length).join("+");
 
   function Movie(title, year, country, language, actors, plot) {
     this.title = title;
@@ -189,7 +195,7 @@ function movieThis() {
       )
       .catch(
         (errorInfo = err => {
-          console.log("\nError occurred: " + err);
+          console.log("\nI seem to have run into an error. " + err);
         })
       );
   }
@@ -208,12 +214,13 @@ function movieThis() {
           response.data.Plot
         );
         console.log("\nNo matches found.");
+        console.log("Here is another movie you may enjoy instead:")
         defaultMovie.printInfo();
         defaultMovie.getRatings(response);
       })
       .catch(
         (errorInfo = err => {
-          console.log("\nError occurred: " + err);
+          console.log("\nI seem to have run into an error. " + err);
         })
       );
   }
@@ -221,4 +228,23 @@ function movieThis() {
 
 function doWhatItSays() {
   console.log("\nReading random.txt file...");
+
+  fs.readFile("random.txt", "utf8", function(err, data) {
+    if (err) {
+      return console.log("\nI seem to have run into an error. " + err);
+    }
+
+    if (data.search("concert-this") === 0) {
+      let artist = data.slice(14, data.length - 1).replace(" ", "+");
+      concertThis(artist);
+    } else if (data.search("spotify-this-song") === 0) {
+      let song = data.slice(19, data.length - 1);
+      spotifyThisSong(song);
+    } else if (data.search("movie-this") === 0) {
+      let movie = data.slice(12, data.length - 1).replace(" ", "+");
+      movieThis(movie);
+    } else {
+      console.log("\nI'm sorry, Dave. I'm afraid I can't do that.\n");
+    }
+  });
 }
