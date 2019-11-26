@@ -4,8 +4,20 @@ var keys = require("./keys.js");
 var axios = require("axios");
 var moment = require("moment");
 var Spotify = require("node-spotify-api");
+var fs = require('file-system');
 
 if (process.argv[2] === "concert-this") {
+  concertThis();
+} else if (process.argv[2] === "spotify-this-song") {
+  spotifyThisSong();
+} else if (process.argv[2] === "movie-this") {
+  movieThis();
+} else if (process.argv[2] === "do-what-it-says") {
+  doWhatItSays();
+}
+
+function concertThis() {
+  console.log("\nSearching for upcoming performances from this artist...");
   let artist = process.argv.slice(3, process.argv.length).join("+");
 
   let queryUrl =
@@ -42,7 +54,10 @@ if (process.argv[2] === "concert-this") {
         console.log("\nError occurred: " + err + "\n");
       })
     );
-} else if (process.argv[2] === "spotify-this-song") {
+}
+
+function spotifyThisSong() {
+  console.log("\nSearching for this song on Spotify...");
   let song = process.argv.slice(3, process.argv.length).join(" ");
 
   let spotify = new Spotify({
@@ -104,7 +119,11 @@ if (process.argv[2] === "concert-this") {
         console.log("\nNo results found.");
       })
     );
-} else if (process.argv[2] === "movie-this") {
+}
+
+function movieThis() {
+  console.log("\nSearching OMDB for this movie...");
+
   let movie = process.argv.slice(3, process.argv.length).join("+");
 
   function Movie(title, year, country, language, actors, plot) {
@@ -116,10 +135,12 @@ if (process.argv[2] === "concert-this") {
     this.plot = plot;
 
     this.getRatings = function getRatings(response) {
-      console.log("Ratings for this movie:\n")
-      response.data.Ratings.forEach(rating => console.log(rating.Source + ": " + rating.Value));
+      console.log("Ratings for this movie:\n");
+      response.data.Ratings.forEach(rating =>
+        console.log(rating.Source + ": " + rating.Value)
+      );
       console.log("\n");
-    }
+    };
 
     this.printInfo = function printInfo() {
       console.log(
@@ -144,7 +165,6 @@ if (process.argv[2] === "concert-this") {
 
   function getMovieDetails() {
     let queryUrl = "http://www.omdbapi.com/?t=" + movie + "&apikey=99c37d73";
-    console.log(queryUrl);
 
     axios
       .get(queryUrl)
@@ -153,7 +173,7 @@ if (process.argv[2] === "concert-this") {
           if (response.data.Title === undefined) {
             getDefaultMovie();
           } else {
-            console.log("\nMatch found:")
+            console.log("\nMatch found:");
             let movieDetails = new Movie(
               response.data.Title,
               response.data.Year,
@@ -176,7 +196,6 @@ if (process.argv[2] === "concert-this") {
 
   function getDefaultMovie() {
     let queryUrl = "http://www.omdbapi.com/?t=mr+nobody&apikey=99c37d73";
-    console.log(queryUrl);
     axios
       .get(queryUrl)
       .then(function(response) {
@@ -198,4 +217,8 @@ if (process.argv[2] === "concert-this") {
         })
       );
   }
+}
+
+function doWhatItSays() {
+  console.log("\nReading random.txt file...");
 }
